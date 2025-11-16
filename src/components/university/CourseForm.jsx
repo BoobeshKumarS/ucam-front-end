@@ -625,103 +625,103 @@ const CourseForm = ({ universityId }) => {
       </Modal>
 
       {/* Existing Courses */}
-      <Card className="border-0 shadow-sm">
-        <Card.Body className="p-0">
-          {currentCourses.length === 0 ? (
-            <div className="text-center py-5">
-              <FaPlus size={48} className="text-muted mb-3" />
-              <h5 className="text-muted">No Courses Yet</h5>
-              <p className="text-muted mb-4">
-                Get started by creating your first course for students to apply to.
-              </p>
-              <Button 
-                variant="primary" 
-                onClick={() => setShowForm(true)}
-                disabled={!currentUniversity}
-              >
-                Create First Course
-              </Button>
-              {!currentUniversity && (
-                <div className="mt-2">
-                  <small className="text-warning">
-                    University profile required to create courses
-                  </small>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <Table hover className="mb-0">
-                <thead className="bg-light">
-                  <tr>
-                    <th className="border-0">Course Name</th>
-                    <th className="border-0">Level</th>
-                    <th className="border-0">Duration</th>
-          <th className="border-0">Price</th>
-          <th className="border-0">Language</th>
-          <th className="border-0">Created Date</th>
-          <th className="border-0 text-center">Actions</th>
-         </tr>
-        </thead>
-        <tbody>
-         {currentCourses.map((course) => (
-          <tr key={course.id}>
-           <td>
-            <div>
-             <h6 className="mb-1 fw-semibold">{course.name}</h6>
-             <p className="text-muted mb-0 small">
-              {course.description?.substring(0, 50)}...
-             </p>
-            </div>
-           </td>
-           <td>
-            <Badge bg={getLevelVariant(course.level)}>
-             {course.level.replace("_", " ")}
-            </Badge>
-           </td>
-           <td>{course.duration} years</td>
-           <td>{formatPrice(course.price, course.currency)}</td>
-           <td>{course.language}</td>
-           <td>{new Date(course.createdAt).toLocaleDateString()}</td>
-           <td className="text-center">
-            <div className="d-flex justify-content-center gap-2">
-             <Button
-              variant="outline-info"
-              size="sm"
-              onClick={() => handleView(course)}
-              className="d-flex align-items-center"
-             >
-              <FaEye className="me-1" />
-              View
-             </Button>
-             <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={() => handleEdit(course)}
-              className="d-flex align-items-center"
-             >
-              <FaEdit className="me-1" />
-              Edit
-             </Button>
-             <Button
-              variant="outline-danger"
-              size="sm"
-              onClick={() => handleDelete(course)}
-              className="d-flex align-items-center"
-             >
-              <FaTrash className="me-1" />
-              Delete
-             </Button>
-            </div>
-           </td>
-          </tr>
-         ))}
-        </tbody>
-       </Table>
-      </div>
-     )}
-    </Card.Body>
-   </Card>
+      {currentCourses.length === 0 ? (
+        <Card className="border-0 shadow-sm">
+          <Card.Body className="text-center py-5">
+            <FaPlus size={48} className="text-muted mb-3" />
+            <h5 className="text-muted">No Courses Yet</h5>
+            <p className="text-muted mb-4">
+              Get started by creating your first course for students to apply to.
+            </p>
+            <Button
+              variant="primary"
+              onClick={() => setShowForm(true)}
+              disabled={!currentUniversity}
+            >
+              Create First Course
+            </Button>
+            {!currentUniversity && (
+              <div className="mt-2">
+                <small className="text-warning">
+                  University profile required to create courses
+                </small>
+              </div>
+            )}
+          </Card.Body>
+        </Card>
+      ) : (
+        <Row className="g-4">
+          {currentCourses.map((course) => (
+            <Col lg={6} xl={4} key={course.id}>
+              <Card className="border-0 shadow-sm h-100 hover-lift">
+                <Card.Header className="bg-transparent border-0 pb-0">
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <Badge bg={getLevelVariant(course.level)} className="fs-6">
+                      {course.level.replace("_", " ")}
+                    </Badge>
+                    <small className="text-muted">
+                      {new Date(course.createdAt).toLocaleDateString()}
+                    </small>
+                  </div>
+                </Card.Header>
+                <Card.Body className="pt-0">
+                  <h5 className="fw-bold text-dark mb-3">{course.name}</h5>
+                  <p className="text-muted mb-3">
+                    {course.description?.substring(0, 100)}
+                    {course.description?.length > 100 && '...'}
+                  </p>
+
+                  <div className="mb-4">
+                    <div className="d-flex align-items-center mb-2">
+                      <span className="fw-semibold">Duration:</span>
+                      <span className="ms-2">{course.duration} year(s)</span>
+                    </div>
+                    <div className="d-flex align-items-center mb-2">
+                      <span className="fw-semibold">Language:</span>
+                      <span className="ms-2">{course.language}</span>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <span className="fw-semibold">Price:</span>
+                      <span className="ms-2">{formatPrice(course.price, course.currency)}</span>
+                    </div>
+                  </div>
+                </Card.Body>
+                <Card.Footer className="bg-transparent border-0 pt-0">
+                  <div className="d-flex gap-2">
+                    <Button
+                      variant="outline-info"
+                      size="sm"
+                      onClick={() => handleView(course)}
+                      className="d-flex align-items-center flex-fill"
+                    >
+                      <FaEye className="me-1" />
+                      View
+                    </Button>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={() => handleEdit(course)}
+                      className="d-flex align-items-center flex-fill"
+                    >
+                      <FaEdit className="me-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleDelete(course)}
+                      className="d-flex align-items-center flex-fill"
+                    >
+                      <FaTrash className="me-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </Card.Footer>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
 
    {/* Delete Confirmation Modal */}
    <Modal

@@ -16,7 +16,9 @@ import Register from './pages/Register'
 import Universities from './pages/Universities'
 import Courses from './pages/Courses'
 import StudentDashboard from './components/student/StudentDashboard'
+import StudentProfile from './components/student/StudentProfile'
 import UniversityDashboard from './components/university/UniversityDashboard'
+import UniversityAdminProfile from './components/university/UniversityAdminProfile'
 
 function App() {
   return (
@@ -45,6 +47,22 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['ADMIN']}>
                       <UniversityDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/student/profile"
+                  element={
+                    <ProtectedRoute allowedRoles={['STUDENT']}>
+                      <StudentProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/profile"
+                  element={
+                    <ProtectedRoute allowedRoles={['ADMIN']}>
+                      <UniversityAdminProfile />
                     </ProtectedRoute>
                   }
                 />

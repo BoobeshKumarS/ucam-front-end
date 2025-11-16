@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Badge, Button, Form, Spinner, Alert, Card, Modal, Dropdown } from 'react-bootstrap'
+import { Table, Badge, Button, Form, Spinner, Alert, Card, Modal, Dropdown, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchApplicationsByUniversity, updateApplicationStatus } from '../../store/thunks/applicationThunks'
 import { toast } from 'react-toastify'
@@ -126,82 +126,76 @@ const ApplicationManagement = ({ universityId }) => {
         </Badge>
       </div>
 
-      <Card className="border-0 shadow-sm">
-        <Card.Body className="p-0">
-          <div className="table-responsive">
-            <Table hover className="mb-0">
-              <thead className="bg-light">
-                <tr>
-                  <th className="border-0">#</th>
-                  <th className="border-0">Student Name</th>
-                  <th className="border-0">Email</th>
-                  <th className="border-0">Course</th>
-                  <th className="border-0">University</th>
-                  <th className="border-0">Applied Date</th>
-                  <th className="border-0">Status</th>
-                  <th className="border-0 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {universityApplications.map((app, index) => {
-                  const statusInfo = getStatusVariant(app.status)
-                  return (
-                    <tr key={app.applicationId || app.id}>
-                      <td>{index + 1}</td>
-                      <td>
-                        <strong>{getStudentName(app)}</strong>
-                      </td>
-                      <td>
-                        <small className="text-muted">{getStudentEmail(app)}</small>
-                      </td>
-                      <td>
-                        {getCourseName(app.courseId)}
-                      </td>
-                      <td>
-                        {getUniversityName()}
-                      </td>
-                      <td>
-                        {new Date(app.createdAt || app.submittedAt || app.appliedDate).toLocaleDateString()}
-                      </td>
-                      <td>
-                        <Badge bg={statusInfo.bg} className="d-inline-flex align-items-center">
-                          {statusInfo.icon}
-                          {app.status}
-                        </Badge>
-                      </td>
-                      <td className="text-center">
-                        <Dropdown>
-                          <Dropdown.Toggle 
-                            variant="outline-primary" 
-                            size="sm" 
-                            id="dropdown-basic"
-                          >
-                            <FaEllipsisV />
-                          </Dropdown.Toggle>
+      <Row className="g-4">
+        {universityApplications.map((app, index) => {
+          const statusInfo = getStatusVariant(app.status)
+          return (
+            <Col lg={6} xl={4} key={app.applicationId || app.id}>
+              <Card className="border-0 shadow-sm h-100 hover-lift">
+                <Card.Header className="bg-transparent border-0 pb-0">
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <Badge bg={statusInfo.bg} className="d-inline-flex align-items-center fs-6">
+                      {statusInfo.icon}
+                      {app.status}
+                    </Badge>
+                    <small className="text-muted">
+                      #{index + 1}
+                    </small>
+                  </div>
+                </Card.Header>
+                <Card.Body className="pt-0">
+                  <h5 className="fw-bold text-dark mb-2">{getStudentName(app)}</h5>
+                  <p className="text-muted mb-2">
+                    <small>{getStudentEmail(app)}</small>
+                  </p>
 
-                          <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => openStatusModal(app)}>
-                              <FaEdit className="me-2" />
-                              Update Status
-                            </Dropdown.Item>
-                            <Dropdown.Item onClick={() => {
-                              // View application details - you can implement this later
-                              toast.info('View application details feature coming soon')
-                            }}>
-                              <FaEye className="me-2" />
-                              View Details
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </Table>
-          </div>
-        </Card.Body>
-      </Card>
+                  <div className="mb-3">
+                    <div className="d-flex align-items-center mb-2">
+                      <span className="fw-semibold">Course:</span>
+                      <span className="ms-2">{getCourseName(app.courseId)}</span>
+                    </div>
+                    <div className="d-flex align-items-center mb-2">
+                      <span className="fw-semibold">University:</span>
+                      <span className="ms-2">{getUniversityName()}</span>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <span className="fw-semibold">Applied:</span>
+                      <span className="ms-2">
+                        {new Date(app.createdAt || app.submittedAt || app.appliedDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </Card.Body>
+                <Card.Footer className="bg-transparent border-0 pt-0">
+                  <div className="d-flex gap-2">
+                    <Button
+                      variant="outline-info"
+                      size="sm"
+                      onClick={() => {
+                        // View application details - you can implement this later
+                        toast.info('View application details feature coming soon')
+                      }}
+                      className="d-flex align-items-center flex-fill"
+                    >
+                      <FaEye className="me-1" />
+                      View
+                    </Button>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={() => openStatusModal(app)}
+                      className="d-flex align-items-center flex-fill"
+                    >
+                      <FaEdit className="me-1" />
+                      Update
+                    </Button>
+                  </div>
+                </Card.Footer>
+              </Card>
+            </Col>
+          )
+        })}
+      </Row>
 
       {/* Status Update Modal */}
       <Modal show={showStatusModal} onHide={() => setShowStatusModal(false)} centered>

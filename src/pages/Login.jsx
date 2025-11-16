@@ -31,48 +31,18 @@ const Login = () => {
     }
   }, [isAuthenticated, user, navigate])
 
-  // Validation functions
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  const validatePassword = (password) => {
-    const minLength = 8
-    const hasUpperCase = /[A-Z]/.test(password)
-    const hasLowerCase = /[a-z]/.test(password)
-    const hasNumber = /\d/.test(password)
-    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
-
-    return {
-      isValid: password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar,
-      minLength,
-      hasUpperCase,
-      hasLowerCase,
-      hasNumber,
-      hasSpecialChar
-    }
-  }
-
+  // Simple validation - just check if fields are filled
   const validateForm = () => {
     const errors = {}
 
-    // Email validation
     if (!formData.email.trim()) {
       errors.email = 'Email is required'
-    } else if (!validateEmail(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = 'Please enter a valid email address'
     }
 
-    // Password validation
     if (!formData.password) {
       errors.password = 'Password is required'
-    } else {
-      const passwordValidation = validatePassword(formData.password)
-      if (!passwordValidation.isValid) {
-        errors.password = 'Password does not meet requirements'
-        errors.passwordDetails = passwordValidation
-      }
     }
 
     setFormErrors(errors)
@@ -86,12 +56,11 @@ const Login = () => {
       [name]: value,
     })
 
-    // Clear specific field error when user starts typing
+    // Clear field error when user starts typing
     if (formErrors[name]) {
       setFormErrors({
         ...formErrors,
         [name]: null,
-        passwordDetails: name === 'password' ? null : formErrors.passwordDetails
       })
     }
   }
@@ -99,9 +68,10 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    // Validate form before submission
     if (!validateForm()) {
-      showValidationErrors()
+      // Show simple validation errors
+      if (formErrors.email) toast.error(formErrors.email)
+      if (formErrors.password) toast.error(formErrors.password)
       return
     }
 
@@ -117,56 +87,9 @@ const Login = () => {
     }
   }
 
-  const showValidationErrors = () => {
-    if (formErrors.email) {
-      toast.error(formErrors.email)
-    }
-
-    if (formErrors.password) {
-      if (formErrors.passwordDetails) {
-        const details = formErrors.passwordDetails
-        const missingRequirements = []
-        
-        if (!details.hasUpperCase) missingRequirements.push('uppercase letter')
-        if (!details.hasLowerCase) missingRequirements.push('lowercase letter')
-        if (!details.hasNumber) missingRequirements.push('number')
-        if (!details.hasSpecialChar) missingRequirements.push('special character')
-        if (formData.password.length < details.minLength) missingRequirements.push(`minimum ${details.minLength} characters`)
-
-        toast.error(
-          `Password must contain: ${missingRequirements.join(', ')}`,
-          { autoClose: 5000 }
-        )
-      } else {
-        toast.error(formErrors.password)
-      }
-    }
-  }
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
-
-  // Real-time password strength indicator
-  const getPasswordStrength = () => {
-    if (!formData.password) return null
-
-    const validation = validatePassword(formData.password)
-    const requirements = [
-      { met: formData.password.length >= 8, text: '8+ characters' },
-      { met: validation.hasUpperCase, text: 'Uppercase letter' },
-      { met: validation.hasLowerCase, text: 'Lowercase letter' },
-      { met: validation.hasNumber, text: 'Number' },
-      { met: validation.hasSpecialChar, text: 'Special character' }
-    ]
-
-    const metCount = requirements.filter(req => req.met).length
-    const strength = (metCount / requirements.length) * 100
-
-    return { requirements, strength }
-  }
-
-  const passwordStrength = getPasswordStrength()
 
   return (
     <div className="bg-light min-vh-100 d-flex align-items-center">
@@ -215,7 +138,7 @@ const Login = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className={`border-start-0 ${formErrors.email ? 'is-invalid' : ''}`}
+                            className={formErrors.email ? 'is-invalid' : ''}
                             placeholder="Enter your email"
                           />
                         </div>
@@ -226,7 +149,7 @@ const Login = () => {
                         )}
                       </Form.Group>
 
-                      <Form.Group className="mb-3">
+                      <Form.Group className="mb-4"> {/* Increased margin */}
                         <Form.Label className="fw-semibold">Password</Form.Label>
                         <div className="input-group">
                           <span className="input-group-text bg-light border-end-0">
@@ -238,7 +161,7 @@ const Login = () => {
                             value={formData.password}
                             onChange={handleChange}
                             required
-                            className={`border-start-0 ${formErrors.password ? 'is-invalid' : ''}`}
+                            className={formErrors.password ? 'is-invalid' : ''}
                             placeholder="Enter your password"
                           />
                           <button 
@@ -254,48 +177,8 @@ const Login = () => {
                             {formErrors.password}
                           </div>
                         )}
-
-                        {/* Password Strength Indicator */}
-                        {formData.password && (
-                          <div className="mt-2">
-                            <div className="d-flex justify-content-between align-items-center mb-1">
-                              <small className="text-muted">Password Strength:</small>
-                              <small className={`fw-semibold ${
-                                passwordStrength.strength < 40 ? 'text-danger' :
-                                passwordStrength.strength < 80 ? 'text-warning' : 'text-success'
-                              }`}>
-                                {passwordStrength.strength < 40 ? 'Weak' :
-                                 passwordStrength.strength < 80 ? 'Medium' : 'Strong'}
-                              </small>
-                            </div>
-                            <div className="progress mb-2" style={{height: '4px'}}>
-                              <div 
-                                className={`progress-bar ${
-                                  passwordStrength.strength < 40 ? 'bg-danger' :
-                                  passwordStrength.strength < 80 ? 'bg-warning' : 'bg-success'
-                                }`}
-                                style={{width: `${passwordStrength.strength}%`}}
-                              />
-                            </div>
-                            
-                            {/* Password Requirements */}
-                            <div className="small">
-                              {passwordStrength.requirements.map((req, index) => (
-                                <div 
-                                  key={index} 
-                                  className={`d-flex align-items-center mb-1 ${
-                                    req.met ? 'text-success' : 'text-muted'
-                                  }`}
-                                >
-                                  <span className={`me-2 ${req.met ? 'text-success' : 'text-muted'}`}>
-                                    {req.met ? '✓' : '○'}
-                                  </span>
-                                  {req.text}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        
+                        {/* REMOVED: Password strength indicator */}
                       </Form.Group>
 
                       <div className="d-grid">
@@ -330,7 +213,7 @@ const Login = () => {
                 </Card>
               </Col>
 
-              {/* Right Side - Info */}
+              {/* Right Side - Info (unchanged) */}
               <Col md={6}>
                 <div className="h-100 d-flex flex-column justify-content-center">
                   <div className="bg-primary bg-opacity-10 border-start-4 border-primary rounded-end p-4">
@@ -355,7 +238,6 @@ const Login = () => {
                     </div>
                   </div>
 
-                  {/* Stats */}
                   <Row className="g-2 mt-4">
                     <Col xs={6}>
                       <div className="text-center p-3 bg-light rounded">

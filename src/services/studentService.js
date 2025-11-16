@@ -10,4 +10,4 @@ export const studentService = {
     const response = await api.put('/students/me', studentData)
     return response.data
   },
-}
+} 

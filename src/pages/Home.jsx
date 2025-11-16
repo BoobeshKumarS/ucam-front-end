@@ -63,7 +63,7 @@ const Home = () => {
                 Connect with top universities worldwide. Browse thousands of courses, 
                 apply seamlessly, and launch your academic journey with confidence.
               </p>
-              <div className="d-flex flex-wrap gap-3">
+              <div className="d-flex flex-wrap gap-3" style={{ position: 'relative', zIndex: 10 }}>
                 {!isAuthenticated ? (
                   <>
                     <LinkContainer to="/register">

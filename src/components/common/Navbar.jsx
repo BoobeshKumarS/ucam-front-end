@@ -16,6 +16,8 @@ import {
   FaUserCircle,
   FaSignOutAlt,
 } from "react-icons/fa";
+import StudentProfile from "../student/StudentProfile";
+import UniversityAdminProfile from "../university/UniversityAdminProfile";
 
 const Navbar = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -84,6 +86,17 @@ const Navbar = () => {
                     {user?.role === "STUDENT" ? "Student" : "University Admin"}
                   </Dropdown.Header>
                   <Dropdown.Divider />
+                  <LinkContainer
+                    to={
+                      user?.role === "STUDENT"
+                        ? "/student/profile"
+                        : "/admin/profile"
+                    }
+                  >
+                    <Dropdown.Item className="text-success">
+                      Profile
+                    </Dropdown.Item>
+                  </LinkContainer>
                   <Dropdown.Item onClick={handleLogout} className="text-danger">
                     <FaSignOutAlt className="me-2" />
                     Logout
