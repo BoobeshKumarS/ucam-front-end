@@ -58,7 +58,7 @@ const UniversityList = ({ universities = [], onViewCourses }) => {
               )}
 
               {/* Tuition Fee */}
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <div className="d-flex align-items-center text-muted mb-2">
                   <FaMoneyBillWave className="me-2" size={14} />
                   <span className="fw-semibold">Tuition: </span>
@@ -66,7 +66,7 @@ const UniversityList = ({ universities = [], onViewCourses }) => {
                     {university.tuitionFee ? `${university.tuitionFee} ${university.currency}` : 'Not specified'}
                   </span>
                 </div>
-              </div>
+              </div> */}
 
               <div className="mb-3">
                 <div className="d-flex flex-wrap gap-2 mb-2">

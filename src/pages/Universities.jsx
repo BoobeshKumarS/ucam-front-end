@@ -152,18 +152,18 @@ const Universities = () => {
                         </div>
                       </div>
                     )}
-                    <div className="d-flex align-items-center">
+                    {/* <div className="d-flex align-items-center">
                       <FaGraduationCap className="me-2 opacity-75" />
                       <span className="fw-semibold">Tuition Fee: </span>
                       <span className="ms-2">
                         {selectedUniversity.tuitionFee} {selectedUniversity.currency}
                       </span>
-                    </div>
+                    </div> */}
                   </Col>
                   <Col md={4} className="text-center">
                     <div className="bg-opacity-20 rounded p-4">
                       <FaUniversity size={48} className="mb-3 opacity-75" />
-                      <h5 className="mb-1">University Info</h5>
+                      {/* <h5 className="mb-1">University Info</h5> */}
                       {selectedUniversity.contactEmail && (
                         <p className="mb-1 small">{selectedUniversity.contactEmail}</p>
                       )}

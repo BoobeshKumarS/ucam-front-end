@@ -89,21 +89,21 @@ const UniversityDashboard = () => {
   // Use proper name from user profile
   const displayName = user?.firstName || user?.email?.split("@")[0] || "Admin";
 
-  const handleDeleteUniversity = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this university? This action cannot be undone."
-      )
-    ) {
-      try {
-        // You'll need to implement deleteUniversity thunk
-        // await dispatch(deleteUniversity(currentUniversity.id)).unwrap()
-        alert("University deletion would be implemented here");
-      } catch (error) {
-        alert("Failed to delete university");
-      }
-    }
-  };
+  // const handleDeleteUniversity = async () => {
+  //   if (
+  //     window.confirm(
+  //       "Are you sure you want to delete this university? This action cannot be undone."
+  //     )
+  //   ) {
+  //     try {
+  //       // You'll need to implement deleteUniversity thunk
+  //       // await dispatch(deleteUniversity(currentUniversity.id)).unwrap()
+  //       alert("University deletion would be implemented here");
+  //     } catch (error) {
+  //       alert("Failed to delete university");
+  //     }
+  //   }
+  // };
 
   if (universityLoading && !currentUniversity) {
     return (
@@ -250,14 +250,14 @@ const UniversityDashboard = () => {
                               <FaEdit className="me-1" />
                               Edit
                             </Button>
-                            <Button
+                            {/* <Button
                               variant="outline-danger"
                               size="sm"
                               onClick={handleDeleteUniversity}
                             >
                               <FaTrash className="me-1" />
                               Delete
-                            </Button>
+                            </Button> */}
                           </div>
                         </div>
 

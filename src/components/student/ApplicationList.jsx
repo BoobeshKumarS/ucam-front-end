@@ -133,10 +133,10 @@ const ApplicationList = ({ applications }) => {
                             <FaEye className="me-1" />
                             View
                           </Button>
-                          <Button variant="outline-secondary" size="sm" className="d-flex align-items-center">
+                          {/* <Button variant="outline-secondary" size="sm" className="d-flex align-items-center">
                             <FaDownload className="me-1" />
                             Download
-                          </Button>
+                          </Button> */}
                         </div>
                       </td>
                     </tr>

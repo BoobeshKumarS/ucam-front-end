@@ -141,7 +141,7 @@ const ApplicationForm = ({ course, onBack }) => {
       };
 
       // The thunk will automatically fetch the student ID from /students/me
-      await dispatch(createApplication(applicationData)).unwrap();
+      dispatch(createApplication(applicationData));
 
       toast.success("Application submitted successfully!");
       // Navigate to student dashboard

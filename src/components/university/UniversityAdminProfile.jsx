@@ -84,7 +84,7 @@ const UniversityAdminProfile = () => {
     try {
       setUpdating(true);
       setError(null);
-      const updatedProfile = await adminService.updateAdmin(formData);
+      const updatedProfile = await adminService.updateAdmin(profile.id, formData);
       setProfile(updatedProfile);
       setFormData(updatedProfile);
       dispatch(updateUserProfile(updatedProfile));
@@ -370,14 +370,14 @@ const UniversityAdminProfile = () => {
                   <p className="text-muted mb-2 small">
                     {currentUniversity.city}, {currentUniversity.state}, {currentUniversity.country}
                   </p>
-                  <Badge bg="primary">{currentUniversity.fieldOfStudy?.length || 0} Fields of Study</Badge>
+                  {/* <Badge bg="primary">{currentUniversity.fieldOfStudy?.length || 0} Fields of Study</Badge> */}
                 </div>
                 <div className="text-center">
                   <Button
                     variant="outline-primary"
                     size="sm"
                     className="w-100"
-                    onClick={() => window.location.href = "/admin/dashboard"}
+                    onClick={() => window.location.href = "/university/dashboard"}
                   >
                     Manage University
                   </Button>

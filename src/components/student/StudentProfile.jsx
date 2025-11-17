@@ -95,7 +95,7 @@ const StudentProfile = () => {
     try {
       setUpdating(true);
       setError(null);
-      const updatedProfile = await studentService.updateStudent(formData);
+      const updatedProfile = await studentService.updateStudent(profile.id, formData);
       setProfile(updatedProfile);
       setFormData(updatedProfile);
       dispatch(updateUserProfile(updatedProfile));
