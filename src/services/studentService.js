@@ -6,8 +6,8 @@ export const studentService = {
     return response.data
   },
 
-  updateStudent: async (studentData) => {
-    const response = await api.put('/students/me', studentData)
+  updateStudent: async (studentId, studentData) => {
+    const response = await api.put(`/students/${studentId}`, studentData)
     return response.data
   },
-} 
+}

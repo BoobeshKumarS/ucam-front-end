@@ -6,8 +6,8 @@ export const adminService = {
     return response.data
   },
 
-  updateAdmin: async (adminData) => {
-    const response = await api.put('/admins/me', adminData)
+  updateAdmin: async (adminId, adminData) => {
+    const response = await api.put(`/admins/${adminId}`, adminData)
     return response.data
   },
 }

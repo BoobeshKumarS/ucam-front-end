@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Badge, Button, Form, Spinner, Alert, Card, Modal, Dropdown, Row, Col } from 'react-bootstrap'
+import { Table, Badge, Button, Form, Spinner, Alert, Card, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchApplicationsByUniversity, updateApplicationStatus } from '../../store/thunks/applicationThunks'
 import { toast } from 'react-toastify'
-import { FaEye, FaEllipsisV, FaClock, FaCheckCircle, FaTimesCircle, FaEdit, FaHourglassHalf, FaExclamationTriangle } from 'react-icons/fa'
+import { FaEye, FaClock, FaCheckCircle, FaTimesCircle, FaEdit, FaHourglassHalf, FaExclamationTriangle } from 'react-icons/fa'
+import ApplicationDetails from '../student/ApplicationDetails'
 
 const ApplicationManagement = ({ universityId }) => {
   const dispatch = useDispatch()
   const { universityApplications, loading, error } = useSelector((state) => state.applications)
   const { currentUniversity } = useSelector((state) => state.universities)
-  const [showStatusModal, setShowStatusModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [selectedApplication, setSelectedApplication] = useState(null)
-  const [selectedStatus, setSelectedStatus] = useState('')
-  const [remarks, setRemarks] = useState('')
+  const [updatingStatus, setUpdatingStatus] = useState(null)
+
 
   useEffect(() => {
     if (universityId) {
@@ -42,30 +43,26 @@ const ApplicationManagement = ({ universityId }) => {
     return application.personalInfo?.email || 'N/A'
   }
 
-  const handleStatusUpdate = async () => {
-    if (!selectedApplication || !selectedStatus) return
+  const handleStatusUpdate = async (applicationId, newStatus, currentStatus) => {
+    if (newStatus === currentStatus) return // No change needed
+
+    const confirmed = window.confirm(`Are you sure you want to change the status to "${newStatus}"?`)
+    if (!confirmed) return
+
+    setUpdatingStatus(applicationId)
 
     try {
-      await dispatch(updateApplicationStatus(
-        selectedApplication.applicationId || selectedApplication.id, 
-        selectedStatus
-      )).unwrap()
-      
-      toast.success(`Application status updated to ${selectedStatus}!`)
-      setShowStatusModal(false)
-      setSelectedApplication(null)
-      setSelectedStatus('')
-      setRemarks('')
+      await dispatch(updateApplicationStatus(applicationId, newStatus)).unwrap()
+
+      // Refresh the applications list to show updated status
+      dispatch(fetchApplicationsByUniversity(universityId))
+
+      toast.success(`Application status updated to ${newStatus}!`)
     } catch (error) {
       toast.error(error || 'Status update failed')
+    } finally {
+      setUpdatingStatus(null)
     }
-  }
-
-  const openStatusModal = (application) => {
-    setSelectedApplication(application)
-    setSelectedStatus(application.status)
-    setRemarks(application.remarks || '')
-    setShowStatusModal(true)
   }
 
   const getStatusVariant = (status) => {
@@ -134,10 +131,32 @@ const ApplicationManagement = ({ universityId }) => {
               <Card className="border-0 shadow-sm h-100 hover-lift">
                 <Card.Header className="bg-transparent border-0 pb-0">
                   <div className="d-flex justify-content-between align-items-start mb-2">
-                    <Badge bg={statusInfo.bg} className="d-inline-flex align-items-center fs-6">
-                      {statusInfo.icon}
-                      {app.status}
-                    </Badge>
+                    <div className="d-flex align-items-center">
+                      <Badge bg={statusInfo.bg} className="d-inline-flex align-items-center fs-6 me-2">
+                        {statusInfo.icon}
+                        {app.status}
+                      </Badge>
+                      <Form.Select
+                        size="sm"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleStatusUpdate(app.applicationId || app.id, e.target.value, app.status)
+                            e.target.value = "" // Reset select after change
+                          }
+                        }}
+                        disabled={updatingStatus === (app.applicationId || app.id)}
+                        className="border"
+                        style={{ minWidth: '140px', fontSize: '0.875rem' }}
+                      >
+                        <option value="">Change Status</option>
+                        {statusOptions.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </div>
                     <small className="text-muted">
                       #{index + 1}
                     </small>
@@ -167,29 +186,18 @@ const ApplicationManagement = ({ universityId }) => {
                   </div>
                 </Card.Body>
                 <Card.Footer className="bg-transparent border-0 pt-0">
-                  <div className="d-flex gap-2">
-                    <Button
-                      variant="outline-info"
-                      size="sm"
-                      onClick={() => {
-                        // View application details - you can implement this later
-                        toast.info('View application details feature coming soon')
-                      }}
-                      className="d-flex align-items-center flex-fill"
-                    >
-                      <FaEye className="me-1" />
-                      View
-                    </Button>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={() => openStatusModal(app)}
-                      className="d-flex align-items-center flex-fill"
-                    >
-                      <FaEdit className="me-1" />
-                      Update
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline-info"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedApplication(app)
+                      setShowDetailsModal(true)
+                    }}
+                    className="d-flex align-items-center w-100"
+                  >
+                    <FaEye className="me-1" />
+                    View Details
+                  </Button>
                 </Card.Footer>
               </Card>
             </Col>
@@ -197,78 +205,18 @@ const ApplicationManagement = ({ universityId }) => {
         })}
       </Row>
 
-      {/* Status Update Modal */}
-      <Modal show={showStatusModal} onHide={() => setShowStatusModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Update Application Status</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedApplication && (
-            <div className="mb-4">
-              <h6>Application Details:</h6>
-              <div className="bg-light p-3 rounded">
-                <p className="mb-1">
-                  <strong>Student:</strong> {getStudentName(selectedApplication)}
-                </p>
-                <p className="mb-1">
-                  <strong>Email:</strong> {getStudentEmail(selectedApplication)}
-                </p>
-                <p className="mb-1">
-                  <strong>Course:</strong> {getCourseName(selectedApplication.courseId)}
-                </p>
-                <p className="mb-1">
-                  <strong>University:</strong> {getUniversityName()}
-                </p>
-                <p className="mb-0">
-                  <strong>Current Status:</strong> 
-                  <Badge bg={getStatusVariant(selectedApplication.status).bg} className="ms-2">
-                    {selectedApplication.status}
-                  </Badge>
-                </p>
-              </div>
-            </div>
-          )}
 
-          <Form.Group className="mb-3">
-            <Form.Label><strong>New Status</strong></Form.Label>
-            <Form.Select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-            >
-              {statusOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
 
-          <Form.Group>
-            <Form.Label>
-              <strong>Remarks (Optional)</strong>
-            </Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Add any remarks or notes about this status change..."
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowStatusModal(false)}>
-            Cancel
-          </Button>
-          <Button 
-            variant="primary" 
-            onClick={handleStatusUpdate}
-            disabled={!selectedStatus}
-          >
-            Update Status
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Application Details Modal */}
+      <ApplicationDetails
+        application={selectedApplication}
+        show={showDetailsModal}
+        onHide={() => {
+          setShowDetailsModal(false)
+          setSelectedApplication(null)
+        }}
+        readOnly={true}
+      />
     </div>
   )
 }

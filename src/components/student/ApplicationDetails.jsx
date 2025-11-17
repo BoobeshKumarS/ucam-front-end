@@ -4,7 +4,7 @@ import { FaEdit, FaSave, FaTimes, FaUser, FaEnvelope, FaPhone, FaGlobe } from 'r
 import { useDispatch } from 'react-redux'
 import { updateApplication } from '../../store/thunks/applicationThunks'
 
-const ApplicationDetails = ({ application, show, onHide }) => {
+const ApplicationDetails = ({ application, show, onHide, readOnly = false }) => {
  const dispatch = useDispatch()
  const [isEditing, setIsEditing] = useState(false)
  const [loading, setLoading] = useState(false)
@@ -137,7 +137,7 @@ const ApplicationDetails = ({ application, show, onHide }) => {
     <h6 className="text-muted mb-3">
      <FaUser className="me-2" />
      Personal Information
-     {canEdit && !isEditing && (
+     {canEdit && !isEditing && !readOnly && (
       <Button variant="outline-primary" size="sm" className="ms-2" onClick={handleEdit}>
        <FaEdit className="me-1" />
        Edit

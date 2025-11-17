@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -11,6 +11,8 @@ import {
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchApplications } from "../../store/thunks/applicationThunks";
+import { studentService } from "../../services/studentService";
+import { updateUserProfile } from "../../store/slices/authSlice";
 import ApplicationList from "./ApplicationList";
 import UniversityList from "./UniversityList";
 import {
@@ -25,6 +27,27 @@ const StudentDashboard = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { applications } = useSelector((state) => state.applications);
+
+  const [hasFetchedProfile, setHasFetchedProfile] = useState(false);
+
+  useEffect(() => {
+    const fetchUserProfileAndApplications = async () => {
+      if (!user || hasFetchedProfile) return;
+
+      try {
+        if (user.role === "STUDENT") {
+          const studentProfile = await studentService.getCurrentStudent();
+          dispatch(updateUserProfile(studentProfile));
+          setHasFetchedProfile(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch student profile:", error);
+        setHasFetchedProfile(true);
+      }
+    };
+
+    fetchUserProfileAndApplications();
+  }, [dispatch, user, hasFetchedProfile]);
 
   useEffect(() => {
     // Fetch applications without needing to pass student ID

@@ -10,6 +10,7 @@ import {
   Button,
   Spinner,
   Alert,
+  Modal,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -50,6 +51,7 @@ const UniversityDashboard = () => {
 
   const [hasFetchedProfile, setHasFetchedProfile] = useState(false);
   const [activeTab, setActiveTab] = useState("university");
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     const fetchUserProfileAndUniversity = async () => {
@@ -240,7 +242,11 @@ const UniversityDashboard = () => {
                         <div className="d-flex justify-content-between align-items-center mb-4">
                           <h4 className="fw-bold mb-0">University Details</h4>
                           <div className="d-flex gap-2">
-                            <Button variant="outline-primary" size="sm">
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => setShowEditModal(true)}
+                            >
                               <FaEdit className="me-1" />
                               Edit
                             </Button>
@@ -255,32 +261,89 @@ const UniversityDashboard = () => {
                           </div>
                         </div>
 
-                        <Card className="border-0 bg-light">
-                          <Card.Body>
-                            <Row>
-                              <Col md={6}>
-                                <h5 className="fw-bold">
-                                  {currentUniversity.name}
-                                </h5>
-                                <p className="mb-2">
-                                  <strong>Location:</strong>{" "}
-                                  {currentUniversity.city},{" "}
-                                  {currentUniversity.state},{" "}
-                                  {currentUniversity.country}
-                                </p>
-                                <p className="mb-2">
-                                  <strong>Tuition Fee:</strong>{" "}
-                                  {currentUniversity.tuitionFee}{" "}
-                                  {currentUniversity.currency}
-                                </p>
+                        <Card className="border-0 shadow-sm h-100">
+                          <Card.Body className="p-4">
+                            <Row className="g-4">
+                              <Col lg={4}>
+                                {currentUniversity.universityImage &&
+                                  currentUniversity.universityImage !==
+                                    "string" && (
+                                    <div className="text-center mb-3">
+                                      <img
+                                        src={currentUniversity.universityImage}
+                                        alt={currentUniversity.name}
+                                        className="img-fluid rounded shadow-sm"
+                                        style={{
+                                          maxHeight: "200px",
+                                          maxWidth: "100%",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                <div className="text-center">
+                                  <h4 className="fw-bold text-primary mb-1">
+                                    {currentUniversity.name}
+                                  </h4>
+                                  <Badge bg="success" className="mb-3">
+                                    <FaBuilding className="me-1" />
+                                    Active University
+                                  </Badge>
+                                </div>
+                              </Col>
+                              <Col lg={8}>
+                                <Row className="g-3">
+                                  <Col md={6}>
+                                    <div className="bg-light rounded p-3 h-100">
+                                      <h6 className="fw-bold text-muted mb-2">
+                                        <FaBuilding className="me-1 text-primary" />
+                                        Location
+                                      </h6>
+                                      <p className="mb-0 fw-semibold">
+                                        {currentUniversity.city},{" "}
+                                        {currentUniversity.state},{" "}
+                                        {currentUniversity.country}
+                                      </p>
+                                    </div>
+                                  </Col>
+                                  <Col md={6}>
+                                    <div className="bg-light rounded p-3 h-100">
+                                      <h6 className="fw-bold text-muted mb-2">
+                                        <FaBook className="me-1 text-info" />
+                                        Total Courses
+                                      </h6>
+                                      <p className="mb-0 fw-semibold">
+                                        {totalCourses} Courses
+                                      </p>
+                                    </div>
+                                  </Col>
+                                  <Col md={6}>
+                                    <div className="bg-light rounded p-3 h-100">
+                                      <h6 className="fw-bold text-muted mb-2">
+                                        <FaUsers className="me-1 text-warning" />
+                                        Applications
+                                      </h6>
+                                      <p className="mb-0 fw-semibold">
+                                        {universityApplications.length} Total
+                                      </p>
+                                    </div>
+                                  </Col>
+                                </Row>
                                 {currentUniversity.fieldOfStudy &&
                                   currentUniversity.fieldOfStudy.length > 0 && (
-                                    <div className="mb-2">
-                                      <strong>Fields of Study:</strong>
-                                      <div className="d-flex flex-wrap gap-1 mt-1">
+                                    <div className="mt-3">
+                                      <h6 className="fw-bold text-muted mb-2">
+                                        <FaBook className="me-1 text-secondary" />
+                                        Fields of Study
+                                      </h6>
+                                      <div className="d-flex flex-wrap gap-2">
                                         {currentUniversity.fieldOfStudy.map(
                                           (field, index) => (
-                                            <Badge key={index} bg="primary">
+                                            <Badge
+                                              key={index}
+                                              bg="outline-primary"
+                                              className="border"
+                                            >
                                               {field}
                                             </Badge>
                                           )
@@ -288,23 +351,17 @@ const UniversityDashboard = () => {
                                       </div>
                                     </div>
                                   )}
-                              </Col>
-                              <Col md={6}>
-                                {currentUniversity.universityImage &&
-                                  currentUniversity.universityImage !==
-                                    "string" && (
-                                    <div className="text-center">
-                                      <img
-                                        src={currentUniversity.universityImage}
-                                        alt={currentUniversity.name}
-                                        className="img-fluid rounded"
-                                        style={{
-                                          maxHeight: "200px",
-                                          maxWidth: "100%",
-                                        }}
-                                      />
-                                    </div>
-                                  )}
+                                {currentUniversity.description && (
+                                  <div className="mt-3">
+                                    <h6 className="fw-bold text-muted mb-2">
+                                      <FaCog className="me-1 text-secondary" />
+                                      Description
+                                    </h6>
+                                    <p className="mb-0 text-muted">
+                                      {currentUniversity.description}
+                                    </p>
+                                  </div>
+                                )}
                               </Col>
                             </Row>
                           </Card.Body>
@@ -326,6 +383,8 @@ const UniversityDashboard = () => {
                     )}
                   </div>
                 </Tab>
+
+
 
                 {/* Courses Tab */}
                 <Tab
@@ -547,6 +606,26 @@ const UniversityDashboard = () => {
           </Col>
         </Row>
       )}
+
+      {/* Edit University Modal */}
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        size="lg"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit University</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {currentUniversity && (
+            <UniversityForm
+              university={currentUniversity}
+              onSuccess={() => setShowEditModal(false)}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
 
     </Container>
   );

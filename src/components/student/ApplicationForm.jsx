@@ -142,9 +142,10 @@ const ApplicationForm = ({ course, onBack }) => {
 
       // The thunk will automatically fetch the student ID from /students/me
       await dispatch(createApplication(applicationData)).unwrap();
- 
+
       toast.success("Application submitted successfully!");
-      onBack();
+      // Navigate to student dashboard
+      navigate('/student/dashboard');
     } catch (error) {
       toast.error(error || "Failed to submit application");
     }
@@ -335,7 +336,7 @@ const ApplicationForm = ({ course, onBack }) => {
 
                     <div className="d-flex justify-content-end mt-4">
                       <Button variant="primary" onClick={handleNext} disabled={user.role === 'ADMIN'}>
-                        {user.role != 'ADMIN' ? 'Next Step' : 'Only Student can Apply'}
+                        {user.role !== 'ADMIN' ? 'Next Step' : 'Only Student can Apply'}
                       </Button>
                     </div>
                   </div>

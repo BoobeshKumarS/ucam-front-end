@@ -285,14 +285,13 @@ const UniversityAdminProfile = () => {
                       >
                         <option value="">Select Gender</option>
                         <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                        <option value="OTHER">Other</option>
+                        <option value="FEMALE">Female</option> 
+                        <option value="Non-binary">Non-binary</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
                       </Form.Select>
                     ) : (
                       <p className="mb-0 text-dark">
-                        {profile?.gender === "MALE" ? "Male" :
-                         profile?.gender === "FEMALE" ? "Female" :
-                         profile?.gender === "OTHER" ? "Other" : "Not provided"}
+                        {profile.gender || "Not provided"}
                       </p>
                     )}
                   </Form.Group>
@@ -312,7 +311,7 @@ const UniversityAdminProfile = () => {
                     )}
                   </Form.Group>
                 </Col>
-                <Col md={6}>
+                {/* <Col md={6}>
                   <Form.Group>
                     <Form.Label className="fw-semibold">Address</Form.Label>
                     {isEditing ? (
@@ -327,7 +326,7 @@ const UniversityAdminProfile = () => {
                       <p className="mb-0 text-dark">{profile?.address || "Not provided"}</p>
                     )}
                   </Form.Group>
-                </Col>
+                </Col> */}
               </Row>
             </Card.Body>
           </Card>

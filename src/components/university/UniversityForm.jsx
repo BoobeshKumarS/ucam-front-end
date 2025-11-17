@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Form, Button, Row, Col, Alert, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
@@ -36,11 +36,11 @@ const UniversityForm = ({ university }) => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.universities);
 
-  // Get all countries
-  const countries = Country.getAllCountries().map((country) => ({
+  // Get all countries - memoized to ensure availability in useEffect
+  const countries = useMemo(() => Country.getAllCountries().map((country) => ({
     value: country.isoCode,
     label: country.name,
-  }));
+  })), []);
 
   // Validation functions
   const validateForm = () => {
